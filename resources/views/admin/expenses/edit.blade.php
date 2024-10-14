@@ -6,15 +6,50 @@
 
             <!-- Left: Title -->
             <div class="mb-4 sm:mb-0">
-                <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">Edit Expense: {{ $model->id }}</h1>
+                <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">Edit Expense: {{ $expense->id }}</h1>
             </div>
 
         </div>
         <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-            <form class="space-y-6" method="POST" action="{{ route('expense.update') }}" enctype="multipart/form-data">
+            <form class="space-y-6" method="POST" action="{{ route('expense.update', $expense->id) }}" enctype="multipart/form-data">
                 @csrf
                 @include('admin.expenses.fields')
+                <div class="flex items-center justify-between">
+                    <button type="submit"
+                            class="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-violet-600 hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500">
+                        Edit Expense
+                    </button>
+
+                    <x-danger-button
+                        x-data=""
+                        x-on:click.prevent="$dispatch('open-modal', 'confirm-expense-deletion')"
+                    >{{ __('Delete Account') }}</x-danger-button>
+                </div>
             </form>
         </div>
     </div>
 </x-app-layout>
+<x-modal name="confirm-expense-deletion" focusable>
+    <form method="post" action="{{ route('expense.delete', $expense->id) }}" class="p-6">
+        @csrf
+        @method('delete')
+
+        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+            {{ __('Delete Expense: ' . $expense->id) }}
+        </h2>
+
+        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+            {{ __('Are you sure you want to delete this expense? The data will be permanently removed. This action cannot be undone.') }}
+        </p>
+
+        <div class="mt-6 flex justify-end">
+            <x-secondary-button x-on:click="$dispatch('close')">
+                {{ __('Cancel') }}
+            </x-secondary-button>
+
+            <x-danger-button class="ms-3">
+                {{ __('Delete Expense') }}
+            </x-danger-button>
+        </div>
+    </form>
+</x-modal>

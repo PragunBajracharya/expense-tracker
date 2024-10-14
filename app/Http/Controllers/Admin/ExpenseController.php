@@ -8,18 +8,20 @@ use App\Models\Admin\ExpenseCategory;
 use App\Models\User;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 
 class ExpenseController extends Controller
 {
+    use SoftDeletes;
     /**
      * Display a listing of the resource.
      */
     public function index(): Application|Factory|View
     {
-        $model = Expense::orderBy('id', 'desc')->get();
-        return view('admin.expenses.index', compact('model'));
+        $expenses = Expense::orderBy('id', 'desc')->get();
+        return view('admin.expenses.index', compact('expenses'));
     }
 
     /**
@@ -43,8 +45,8 @@ class ExpenseController extends Controller
         $filePath = $receipt->storeAs('', $fileName, 'image');
         $filePath = '/images/' . $filePath;
         $input['receipt'] = $filePath;
-        $model = Expense::create($input);
-        return redirect()->route('expenses.edit', $model)->with('success', 'Expense created successfully');
+        $expense = Expense::create($input);
+        return redirect()->route('expense.edit', $expense)->with('success', 'Expense created successfully');
     }
 
     /**
@@ -60,7 +62,10 @@ class ExpenseController extends Controller
      */
     public function edit(string $id)
     {
-        return view('admin.expenses.edit');
+        $expense = Expense::find($id);
+        $users = User::all();
+        $expenseCategories = ExpenseCategory::all();
+        return view('admin.expenses.edit', compact('expense', 'users', 'expenseCategories'));
     }
 
     /**
@@ -68,7 +73,17 @@ class ExpenseController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $input = $request->all();
+        $receipt = $request->file('receipt');
+        if ($receipt) {
+            $fileName = 'receipt_' . time();
+            $filePath = $receipt->storeAs('', $fileName, 'image');
+            $filePath = '/images/' . $filePath;
+            $input['receipt'] = $filePath;
+        }
+        $expense = Expense::findOrFail($id);
+        $expense->update($input);
+        return redirect()->route('expense.edit', $expense)->with('success', 'Expense updated successfully');
     }
 
     /**
@@ -76,6 +91,8 @@ class ExpenseController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $expense = Expense::find($id);
+        $expense->delete();
+        return redirect()->route('expense.index')->with('success', 'Expense deleted successfully');
     }
 }

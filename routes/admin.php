@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ExpenseCategoryController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ExpenseController;
 
@@ -8,4 +9,11 @@ Route::get('/expense/{id}/edit', [ExpenseController::class, 'edit'])->name('expe
 Route::get('/expense/create', [ExpenseController::class, 'create'])->name('expense.create');
 Route::post('/expense/{id}/update', [ExpenseController::class, 'update'])->name('expense.update');
 Route::post('/expense/store', [ExpenseController::class, 'store'])->name('expense.store');
-Route::post('/expense/delete/{id}', [ExpenseController::class, 'delete'])->name('expense.delete');
+Route::delete('/expense/delete/{id}', [ExpenseController::class, 'destroy'])->name('expense.delete');
+
+Route::get('/expense-categories', [ExpenseCategoryController::class, 'index'])->name('expense-category.index');
+Route::get('/expense-category/{id}/edit', [ExpenseCategoryController::class, 'edit'])->name('expense-category.edit');
+Route::get('/expense-category/create', [ExpenseCategoryController::class, 'create'])->name('expense-category.create');
+Route::post('/expense-category/{id}/update', [ExpenseCategoryController::class, 'update'])->name('expense-category.update');
+Route::post('/expense-category/store', [ExpenseCategoryController::class, 'store'])->name('expense-category.store');
+Route::delete('/expense-category/delete/{id}', [ExpenseCategoryController::class, 'delete'])->name('expense-category.delete');

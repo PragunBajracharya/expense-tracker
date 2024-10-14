@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->unsignedBigInteger('paid_by');
-            $table->unsignedBigInteger('expense_category_id');
+            $table->unsignedBigInteger('expense_category_id')->nullable();
             $table->string('receipt')->nullable();
-            $table->string('amount');
-            $table->text('remarks');
-            $table->string('status');
+            $table->float('amount');
+            $table->longText('remarks')->nullable();
+            $table->string('status')->default('approved');
             $table->softDeletes();
             $table->timestamps();
 

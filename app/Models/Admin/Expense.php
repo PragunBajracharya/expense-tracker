@@ -2,8 +2,10 @@
 
 namespace App\Models\Admin;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Expense extends Model
 {
@@ -18,4 +20,13 @@ class Expense extends Model
         'remarks',
         'status'
     ];
+
+    public function user(): HasOne
+    {
+        return $this->hasOne(User::class, 'id', 'paid_by');
+    }
+
+    public function expenseCategory(): HasOne{
+        return $this->hasOne(ExpenseCategory::class, 'id', 'expense_category_id');
+    }
 }
