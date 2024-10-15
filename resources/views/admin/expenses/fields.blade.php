@@ -1,7 +1,8 @@
+@php use Carbon\Carbon; @endphp
 <div>
     <label for="date" class="block font-medium text-sm text-gray-700 dark:text-gray-300">Date</label>
     <input type="date" id="date" name="date" disabled
-           value="@if(!empty($expense->created_at)){{ $expense->created_at->format('Y-m-d') }}@else{{ date('Y-m-d') }}@endif"
+           value="@if(!empty($expense->created_at)){{ $expense->created_at->format('Y-m-d') }}@else{{ Carbon::now('America/Toronto')->format('Y-m-d') }}@endif"
            class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full">
 </div>
 <div>
@@ -17,7 +18,7 @@
         <option value="">Select a category</option>
         @foreach($expenseCategories as $category)
             <option value="{{ $category->id }}"
-                    @if(!empty($expense->expenseCategory) && $expense->expenseCategory->id == $category->id) selected @endif>{{ $category->name }}</option>
+                    @if(!empty($expense->expenseCategory) && $expense->expenseCategory->id == $category->id) selected @endif>{{ $category->title }}</option>
         @endforeach
     </select>
 </div>

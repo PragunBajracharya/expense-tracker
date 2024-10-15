@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class ExpenseCategoryController extends Controller
@@ -18,27 +19,26 @@ class ExpenseCategoryController extends Controller
      */
     public function index(): Application|Factory|View
     {
-        $model = ExpenseCategory::orderBy('id', 'desc')->get();
-        return view('admin.expense-category.index', compact('model'));
+        $expenseCategories = ExpenseCategory::orderBy('id', 'desc')->get();
+        return view('admin.expense-category.index', compact('expenseCategories'));
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): Application|Factory|View
     {
-        $expenseCategories = ExpenseCategory::all();
-        return view('admin.expense-category.create', compact('expenseCategories'));
+        return view('admin.expense-category.create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $input = $request->all();
-        $model = ExpenseCategory::create($input);
-        return redirect()->route('expense-category.edit', $model)->with('success', 'Expense created successfully');
+        $category = ExpenseCategory::create($input);
+        return redirect()->route('expense-category.edit', $category)->with('success', 'Expense created successfully');
     }
 
     /**
@@ -52,24 +52,30 @@ class ExpenseCategoryController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(string $id): Application|Factory|View
     {
-        return view('admin.expense-category.edit');
+        $category = ExpenseCategory::find($id);
+        return view('admin.expense-category.edit', compact('category'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $id): RedirectResponse
     {
-        //
+        $inputs = $request->all();
+        $category = ExpenseCategory::find($id);
+        $category->update($inputs);
+        return redirect()->route('expense-category.edit', $category)->with('success', 'Expense updated successfully');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function delete(string $id): RedirectResponse
     {
-        //
+        $category = ExpenseCategory::find($id);
+        $category->delete();
+        return redirect()->route('expense-category.index')->with('success', 'Expense deleted successfully');
     }
 }

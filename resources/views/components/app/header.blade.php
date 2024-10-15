@@ -18,8 +18,10 @@
                         <rect x="4" y="11" width="16" height="2" />
                         <rect x="4" y="17" width="16" height="2" />
                     </svg>
-                    <x-application-logo class="w-auto fill-current text-gray-800 dark:text-gray-200" />
                 </button>
+                <a href="{{ route('dashboard') }}">
+                    <x-application-logo class="w-auto fill-current text-gray-800 dark:text-gray-200" />
+                </a>
 
             </div>
 

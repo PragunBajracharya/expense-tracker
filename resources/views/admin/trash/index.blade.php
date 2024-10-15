@@ -6,13 +6,8 @@
 
             <!-- Left: Title -->
             <div class="mb-4 sm:mb-0">
-                <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">Expense Categories</h1>
+                <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">Trashed Expenses</h1>
             </div>
-
-            <a href="{{ route('expense-category.create') }}"
-               class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-violet-600 hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500">
-                Create Category
-            </a>
 
         </div>
 
@@ -22,11 +17,19 @@
                 <tr>
                     <th scope="col"
                         class="px-6 py-3 text-left text-xs font-medium text-violet-800 uppercase tracking-wider">
-                        Date
+                        Deleted Date
                     </th>
                     <th scope="col"
                         class="px-6 py-3 text-left text-xs font-medium text-violet-800 uppercase tracking-wider">
                         Title
+                    </th>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-violet-800 uppercase tracking-wider">
+                        Category
+                    </th>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-violet-800 uppercase tracking-wider">
+                        Amount
                     </th>
                     <th scope="col" class="relative px-6 py-3">
                         <span class="sr-only">Actions</span>
@@ -34,27 +37,37 @@
                 </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-violet-100">
-                @if(count($expenseCategories) > 0)
-                    @foreach($expenseCategories as $category)
+                @if(count($expenses) > 0)
+                    @foreach($expenses as $expense)
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-violet-900">{{ $category->created_at->format('Y-m-d') }}</div>
+                                <div class="text-sm text-violet-900">{{ $expense->deleted_at->format('Y-m-d') }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-violet-900">{{ $category->title }}</div>
+                                <div class="text-sm text-violet-900">{{ $expense->title }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                @if($expense->category)
+                                    <span
+                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-violet-100 text-violet-800">
+                                {{ $expense->category->name }}
+                            </span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-violet-900">$ {{ $expense->amount }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <a href="{{ route('expense-category.edit', $category->id) }}"
+                                <a href="{{ route('trash.restore', $expense->id) }}"
                                    class="inline-flex items-center p-1 border border-violet-300 rounded-md text-violet-600 hover:bg-violet-100 hover:text-violet-900 mr-2 transition duration-150 ease-in-out">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
                                          fill="currentColor">
-                                        <path
-                                            d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                        <path d="M11.442 4.576a1 1 0 1 0-1.634-1.152L4.22 11.35 1.773 8.366A1 1 0 1 0 .227 9.634l3.281 4a1 1 0 0 0 1.59-.058l6.344-9ZM15.817 4.576a1 1 0 1 0-1.634-1.152l-5.609 7.957a1 1 0 0 0-1.347 1.453l.656.8a1 1 0 0 0 1.59-.058l6.344-9Z" />
                                     </svg>
                                     <span class="sr-only">Edit</span>
                                 </a>
                                 <button
-                                    x-on:click.prevent="$dispatch('open-modal', 'confirm-category-deletion-{{ $category->id }}')"
+                                    x-on:click.prevent="$dispatch('open-modal', 'confirm-expense-deletion-{{ $expense->id }}')"
                                     class="inline-flex items-center p-1 border border-red-300 rounded-md text-red-600 hover:bg-red-100 hover:text-red-900 transition duration-150 ease-in-out">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
                                          fill="currentColor">
@@ -69,16 +82,12 @@
                     @endforeach
                 @else
                     <tr>
-                        <td colspan="3" class="px-6 py-24 text-center">
+                        <td colspan="5" class="px-6 py-24 text-center">
                             <div class="flex flex-col items-center">
                                 <svg class="w-16 h-16 text-violet-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                 </svg>
-                                <h3 class="text-lg font-medium text-violet-900 mb-1">No Category yet</h3>
-                                <p class="text-violet-500 mb-4">Get started by creating a new category.</p>
-                                <a href="{{ route('expense-category.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-violet-600 hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500">
-                                    Add Your First Category
-                                </a>
+                                <h3 class="text-lg font-medium text-violet-900 mb-1">No expenses trashed</h3>
                             </div>
                         </td>
                     </tr>
@@ -88,18 +97,18 @@
         </div>
     </div>
 </x-app-layout>
-@foreach($expenseCategories as $category)
-    <x-modal name="confirm-category-deletion-{{ $category->id }}" focusable>
-        <form method="post" action="{{ route('expense-category.delete', $category->id) }}" class="p-6">
+@foreach($expenses as $expense)
+    <x-modal name="confirm-expense-deletion-{{ $expense->id }}" focusable>
+        <form method="post" action="{{ route('trash.delete', $expense->id) }}" class="p-6">
             @csrf
             @method('delete')
 
             <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                {{ __('Delete Category: ' . $category->id) }}
+                {{ __('Delete Expense: ' . $expense->id) }}
             </h2>
 
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                {{ __('Are you sure you want to delete this category? The data will be permanently removed. This action cannot be undone.') }}
+                {{ __('Are you sure you want to delete this expense? The data will be permanently removed. This action cannot be undone.') }}
             </p>
 
             <div class="mt-6 flex justify-end">
@@ -108,7 +117,7 @@
                 </x-secondary-button>
 
                 <x-danger-button class="ms-3">
-                    {{ __('Delete Category') }}
+                    {{ __('Delete Expense') }}
                 </x-danger-button>
             </div>
         </form>

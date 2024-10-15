@@ -6,28 +6,38 @@ use App\Http\Controllers\Controller;
 use App\Models\Admin\Expense;
 use App\Models\Admin\ExpenseCategory;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class ExpenseController extends Controller
 {
-    use SoftDeletes;
+
     /**
      * Display a listing of the resource.
      */
-    public function index(): Application|Factory|View
+    public function index(Request $request): Application|Factory|View
     {
-        $expenses = Expense::orderBy('id', 'desc')->get();
+        $input = $request->all();
+        if (!empty($input['filter'])) {
+            $validated = $request->validate([
+                'filter' => 'date',
+            ]);
+            $filterDate = Carbon::parse($input['filter']);
+            $expenses = Expense::whereDate('created_at' , "=", $filterDate)->orderBy('id', 'desc')->paginate(10);
+        } else {
+            $expenses = Expense::orderBy('id', 'desc')->paginate(10);
+        }
         return view('admin.expenses.index', compact('expenses'));
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): Application|Factory|View
     {
         $users = User::all();
         $expenseCategories = ExpenseCategory::all();
@@ -37,7 +47,7 @@ class ExpenseController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $input = $request->all();
         $receipt = $request->file('receipt');
@@ -60,7 +70,7 @@ class ExpenseController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(string $id): Application|Factory|View
     {
         $expense = Expense::find($id);
         $users = User::all();
@@ -71,9 +81,11 @@ class ExpenseController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $id): RedirectResponse
     {
         $input = $request->all();
+        $input['expense_category_id'] = $input['category'];
+        unset($input['category']);
         $receipt = $request->file('receipt');
         if ($receipt) {
             $fileName = 'receipt_' . time();
@@ -89,7 +101,7 @@ class ExpenseController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function delete(string $id): RedirectResponse
     {
         $expense = Expense::find($id);
         $expense->delete();

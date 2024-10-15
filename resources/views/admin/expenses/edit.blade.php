@@ -23,7 +23,7 @@
                     <x-danger-button
                         x-data=""
                         x-on:click.prevent="$dispatch('open-modal', 'confirm-expense-deletion')"
-                    >{{ __('Delete Account') }}</x-danger-button>
+                    >{{ __('Delete Expense') }}</x-danger-button>
                 </div>
             </form>
         </div>

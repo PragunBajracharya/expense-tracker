@@ -9,11 +9,19 @@
                 <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">Expenses</h1>
             </div>
 
-            <a href="{{ route('expense.create') }}"
-               class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-violet-600 hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500">
-                Create Expense
-            </a>
-
+            <div class="flex space-x-4">
+                <div class="relative">
+                    <form method="GET" action="{{ route('expense.index') }}">
+                        <input type="date" id="date" name="filter" onchange="this.form.submit()"
+                            class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 sm:text-sm rounded-md"
+                            placeholder="Filter by date">
+                    </form>
+                </div>
+                <a href="{{ route('expense.create') }}"
+                   class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-violet-600 hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500">
+                    Create Expense
+                </a>
+            </div>
         </div>
 
         <div class="bg-white shadow-md rounded-lg overflow-x-auto">
@@ -55,7 +63,7 @@
                             @if($expense->expense_category_id)
                                 <span
                                     class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-violet-100 text-violet-800">
-                                Business
+                                {{ $expense->expenseCategory->title }}
                             </span>
                             @endif
                         </td>
@@ -105,6 +113,7 @@
                 </tbody>
             </table>
         </div>
+        {{ $expenses->links() }}
     </div>
 </x-app-layout>
 @foreach($expenses as $expense)
@@ -118,7 +127,7 @@
             </h2>
 
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                {{ __('Are you sure you want to delete this expense? The data will be permanently removed. This action cannot be undone.') }}
+                {{ __('Are you sure you want to delete this expense? The data will be deleted temporarily and will be moved to trash.') }}
             </p>
 
             <div class="mt-6 flex justify-end">
